@@ -1,5 +1,6 @@
 import socket
 import binascii
+from tkinter import colorchooser
 from breezypythongui import EasyFrame
 
 CONTROLLER_IP = "192.168.2.22"
@@ -198,15 +199,23 @@ def set_number_of_segments(segments: int = 1):
 def set_number_of_leds_per_segment(leds: int = 154):
     send_data(f"38 {dec_to_even_hex(leds, 2)} 00 2d 83")
 
+
 class SP108E_GUI(EasyFrame):
 
     def __init__(self):
         EasyFrame.__init__(self, title="SP108E Controller")
-        self.label = self.addLabel(text="SP108E Controller", row=0, column=0, columnspan=3)
-        self.onButton = self.addButton(text="Turn On", row=1, column=0, command=self.on_leds)
-        self.offButton = self.addButton(text="Turn Off", row=1, column=1, command=self.off_leds)
-        self.infoButton = self.addButton(text="Get info", row=1, column=2, command=self.info_controller)
-        self.outputarea = self.addTextArea("", row=2, column=0, columnspan=3, width=40, height=15)
+        self.label = self.addLabel(
+            text="SP108E Controller", row=0, column=0, columnspan=3)
+        self.onButton = self.addButton(
+            text="Turn On", row=1, column=0, command=self.on_leds)
+        self.offButton = self.addButton(
+            text="Turn Off", row=1, column=1, command=self.off_leds)
+        self.infoButton = self.addButton(
+            text="Get info", row=1, column=2, command=self.info_controller)
+        self.colorButton = self.addButton(
+            text="Get color", row=1, column=3, command=self.choseColor)
+        self.outputarea = self.addTextArea(
+            "", row=2, column=0, columnspan=3, width=60, height=15)
 
         initial_info = get_device_settings()
         if initial_info["turned_on"] == 0:
@@ -215,7 +224,7 @@ class SP108E_GUI(EasyFrame):
         else:
             self.onButton["state"] = "disabled"
             self.offButton["state"] = "normal"
-
+        self.outputarea.setBackground("#" + initial_info["current_color"])
 
     def on_leds(self):
         self.offButton["state"] = "normal"
@@ -238,6 +247,13 @@ class SP108E_GUI(EasyFrame):
             #print(f"{i}: {info[i]}")
             res = res + f"{i}: {info[i]}\n"
         self.outputarea.setText(res)
+
+    def choseColor(self):
+        colorTuple = colorchooser.askcolor()
+        if not colorTuple[0]:
+            return
+        self.outputarea.setText(f"Custom color chosen (hex): {colorTuple[1]}")
+
 
 if __name__ == "__main__":
     SP108E_GUI().mainloop()
