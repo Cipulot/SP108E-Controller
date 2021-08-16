@@ -224,7 +224,7 @@ class SP108E_GUI(EasyFrame):
         else:
             self.onButton["state"] = "disabled"
             self.offButton["state"] = "normal"
-        self.outputarea.setBackground("#" + initial_info["current_color"])
+        self.setBackground("#" + initial_info["current_color"])
 
     def on_leds(self):
         self.offButton["state"] = "normal"
